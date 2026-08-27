@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from pypdf import PdfReader
 
 st.set_page_config(page_title="AI Oral Examiner Multilingual", layout="wide")
@@ -12,7 +12,7 @@ if not api_key:
     st.error("⚠️ يرجى ضبط GEMINI_API_KEY في Streamlit Secrets.")
     st.stop()
 
-genai.configure(api_key=api_key)
+client = genai.Client(api_key=api_key)
 
 # 2. القائمة الجانبية
 st.sidebar.header("⚙️ إعدادات الإمتحان")
@@ -61,8 +61,10 @@ if st.button("🚀 اطرح سؤالاً جديداً من الدرس"):
         3. اكتب السؤال مباشرة بدون مقدمات طويلة.
         """
         with st.spinner("الأستاذ يقرأ الدرس ويفكر في سؤال..."):
-            model = genai.GenerativeModel("models/gemini-1.5-flash")
-            res = model.generate_content(prompt)
+            res = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt
+            )
             st.session_state.question = res.text
             st.session_state.feedback = ""
 
@@ -81,11 +83,13 @@ if st.session_state.question:
         if audio_val:
             with st.spinner("جاري استماع الأستاذ للصوت وتحليله..."):
                 audio_bytes = audio_val.read()
-                model = genai.GenerativeModel("models/gemini-1.5-flash")
-                res_audio = model.generate_content([
-                    {"mime_type": "audio/wav", "data": audio_bytes},
-                    "قم بتفريغ هذا الصوت إلى نص بدقة مهما كانت اللهجة (جزائرية، مصري، عرنسي، إنجليزي)."
-                ])
+                res_audio = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[
+                        {"inline_data": {"mime_type": "audio/wav", "data": audio_bytes}},
+                        "قم بتفريغ هذا الصوت إلى نص بدقة مهما كانت اللهجة (جزائرية، مصري، عرنسي، إنجليزي)."
+                    ]
+                )
                 user_response = res_audio.text
                 st.write(f"📝 **ما فهمه الأستاذ من كلامك الصوتي:** {user_response}")
         elif text_val:
@@ -106,8 +110,10 @@ if st.session_state.question:
             4. توضيح إذا كانت إجابته صحيحة، أو ما الذي نقصه في الفهم وكيف يصححه.
             """
             with st.spinner("الأستاذ يقيّم إجابتك الآن..."):
-                model = genai.GenerativeModel("models/gemini-1.5-flash")
-                eval_res = model.generate_content(prompt_eval)
+                eval_res = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=prompt_eval
+                )
                 st.session_state.feedback = eval_res.text
         else:
             st.warning("سجل صوتك أو اكتب الإجابة أولاً!")
