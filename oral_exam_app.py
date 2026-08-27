@@ -62,7 +62,7 @@ if st.button("🚀 اطرح سؤالاً جديداً من الدرس"):
         """
         with st.spinner("الأستاذ يقرأ الدرس ويفكر في سؤال..."):
             res = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-3.6-flash",
                 contents=prompt
             )
             st.session_state.question = res.text
@@ -84,7 +84,7 @@ if st.session_state.question:
             with st.spinner("جاري استماع الأستاذ للصوت وتحليله..."):
                 audio_bytes = audio_val.read()
                 res_audio = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model="gemini-3.6-flash",
                     contents=[
                         {"inline_data": {"mime_type": "audio/wav", "data": audio_bytes}},
                         "قم بتفريغ هذا الصوت إلى نص بدقة مهما كانت اللهجة (جزائرية، مصري، عرنسي، إنجليزي)."
@@ -111,7 +111,7 @@ if st.session_state.question:
             """
             with st.spinner("الأستاذ يقيّم إجابتك الآن..."):
                 eval_res = client.models.generate_content(
-                    model="gemini-2.0-flash",
+                    model="gemini-3.6-flash",
                     contents=prompt_eval
                 )
                 st.session_state.feedback = eval_res.text
