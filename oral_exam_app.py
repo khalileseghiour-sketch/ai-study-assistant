@@ -61,7 +61,7 @@ if st.button("🚀 اطرح سؤالاً جديداً من الدرس"):
         3. اكتب السؤال مباشرة بدون مقدمات طويلة.
         """
         with st.spinner("الأستاذ يقرأ الدرس ويفكر في سؤال..."):
-            model = genai.GenerativeModel("gemini-1.5-flash")
+            model = genai.GenerativeModel("models/gemini-1.5-flash")
             res = model.generate_content(prompt)
             st.session_state.question = res.text
             st.session_state.feedback = ""
@@ -81,7 +81,7 @@ if st.session_state.question:
         if audio_val:
             with st.spinner("جاري استماع الأستاذ للصوت وتحليله..."):
                 audio_bytes = audio_val.read()
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel("models/gemini-1.5-flash")
                 res_audio = model.generate_content([
                     {"mime_type": "audio/wav", "data": audio_bytes},
                     "قم بتفريغ هذا الصوت إلى نص بدقة مهما كانت اللهجة (جزائرية، مصري، عرنسي، إنجليزي)."
@@ -106,7 +106,7 @@ if st.session_state.question:
             4. توضيح إذا كانت إجابته صحيحة، أو ما الذي نقصه في الفهم وكيف يصححه.
             """
             with st.spinner("الأستاذ يقيّم إجابتك الآن..."):
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel("models/gemini-1.5-flash")
                 eval_res = model.generate_content(prompt_eval)
                 st.session_state.feedback = eval_res.text
         else:
