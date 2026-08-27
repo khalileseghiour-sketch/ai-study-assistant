@@ -8,7 +8,7 @@ st.set_page_config(page_title="AI Study Assistant", layout="wide")
 st.title("📚 نظام أتمتة وتلخيص الدروس الذكي")
 
 # القائمة الجانبية لإدخال المفتاح
-api_key = st.secrets.get("GEMINI_API_KEY")
+api_key = st.sidebar.text_input("مفتاح Gemini API Key:", type="password")
 
 # 1. رفع ملفات الدروس (PDF)
 uploaded_files = st.file_uploader(
